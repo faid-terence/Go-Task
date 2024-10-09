@@ -37,18 +37,23 @@ class _TodopageState extends State<Todopage> {
       length: 3,
       child: Scaffold(
         appBar: AppBar(
-          leading: IconButton(
-            icon: const Icon(
-              Icons.menu_book_rounded,
-              color: Colors.blue,
+          leading: Padding(
+            padding: const EdgeInsets.only(left: 25),
+            child: IconButton(
+              icon: const Icon(
+                Icons.menu_book_rounded,
+                color: Colors.blue,
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+              },
             ),
-            onPressed: () {
-              Navigator.pop(context);
-            },
           ),
-          title: const Text(
-            "Go Task",
-            style: TextStyle(),
+          title: const Center(
+            child: Text(
+              "Go Task",
+              style: TextStyle(),
+            ),
           ),
           bottom: const TabBar(
             tabs: [
@@ -58,15 +63,23 @@ class _TodopageState extends State<Todopage> {
             ],
           ),
         ),
-        body: TabBarView(
-          children: [
-            _buildTodoList(todoItems),
-            _buildTodoList(
-                todoItems.where((item) => item['isCompleted']).toList()),
-            _buildTodoList(
-                todoItems.where((item) => !item['isCompleted']).toList()),
-          ],
+        body: Container(
+          padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 25),
+          child: TabBarView(
+            children: [
+              _buildTodoList(todoItems),
+              _buildTodoList(
+                  todoItems.where((item) => item['isCompleted']).toList()),
+              _buildTodoList(
+                  todoItems.where((item) => !item['isCompleted']).toList()),
+            ],
+          ),
         ),
+        floatingActionButton: FloatingActionButton(
+            child: const Icon(Icons.add),
+            onPressed: () {
+              Navigator.pushNamed(context, '/addTodo');
+            }),
       ),
     );
   }

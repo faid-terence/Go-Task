@@ -1,10 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:todo/Provider/themeProvider.dart';
+import 'package:todo/pages/addTodoPage.dart';
 import 'package:todo/pages/homePage.dart';
-import 'package:todo/pages/settingsPage.dart';
+import 'package:todo/pages/settingPage.dart';
 import 'package:todo/pages/todoPage.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => Themeprovider(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -14,14 +22,17 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      theme: Provider.of<Themeprovider>(context).themeData,
       home: const MainScreen(),
-      theme: ThemeData.light(), // Using light theme by default
+      routes: {
+        "/addTodo": (context) => Addtodopage(),
+      },
     );
   }
 }
 
 class MainScreen extends StatefulWidget {
-  const MainScreen({Key? key}) : super(key: key);
+  const MainScreen({super.key});
 
   @override
   _MainScreenState createState() => _MainScreenState();
@@ -44,7 +55,7 @@ class _MainScreenState extends State<MainScreen> {
         children: [
           Homepage(onGetStarted: () => _onItemTapped(1)),
           const Todopage(),
-          const Settingspage(),
+          const Settingpage(),
         ],
       ),
       bottomNavigationBar: _selectedIndex != 0
@@ -57,8 +68,8 @@ class _MainScreenState extends State<MainScreen> {
                   label: 'Home',
                 ),
                 BottomNavigationBarItem(
-                  icon: Icon(Icons.add_box, color: Colors.blue),
-                  label: 'Add New Task',
+                  icon: Icon(Icons.edit_calendar_rounded, color: Colors.blue),
+                  label: 'My Todo',
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(Icons.settings, color: Colors.blue),

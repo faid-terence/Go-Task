@@ -27,7 +27,6 @@ class Homepage extends StatelessWidget {
           const Text(
             "Welcome to Go Task",
             style: TextStyle(
-              color: Colors.black,
               fontWeight: FontWeight.bold,
               fontSize: 30,
             ),

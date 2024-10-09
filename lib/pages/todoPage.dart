@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:todo/components/todoList.dart';
+import 'package:todo/data/database.dart';
+import 'package:todo/pages/addTodoPage.dart';
 
 class Todopage extends StatefulWidget {
   const Todopage({Key? key}) : super(key: key);
@@ -9,32 +12,35 @@ class Todopage extends StatefulWidget {
 }
 
 class _TodopageState extends State<Todopage> {
-  List<Map<String, dynamic>> todoItems = [
-    {
-      'taskName': 'UI Design',
-      'isCompleted': false,
-      'startTime': DateTime(2023, 1, 1, 9, 0),
-      'endTime': DateTime(2023, 1, 1, 11, 0),
-    },
-    {
-      'taskName': 'Team Meeting',
-      'isCompleted': false,
-      'startTime': DateTime(2023, 1, 1, 13, 0),
-      'endTime': DateTime(2023, 1, 1, 14, 30),
-    },
-    {
-      'taskName': 'Project Planning',
-      'isCompleted': true,
-      'startTime': DateTime(2023, 1, 1, 15, 0),
-      'endTime': DateTime(2023, 1, 1, 16, 0),
-    },
-  ];
-  var selectedValue = 0;
+  final _mybox = Hive.box('todoBox');
+  TodoDatabase todoDatabase = TodoDatabase();
+
+  @override
+  void initState() {
+    super.initState();
+    if (_mybox.get("todoItems") == null) {
+      todoDatabase.createInitialData();
+    } else {
+      todoDatabase.loadData();
+    }
+  }
+
+  void _addNewTask() async {
+    final bool? taskAdded = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => Addtodopage()),
+    );
+    if (taskAdded == true) {
+      setState(() {
+        todoDatabase.loadData();
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 3,
+      length: 4,
       child: Scaffold(
         appBar: AppBar(
           leading: Padding(
@@ -45,65 +51,81 @@ class _TodopageState extends State<Todopage> {
                 color: Colors.blue,
               ),
               onPressed: () {
-                Navigator.pop(context);
+                // Implement menu functionality if needed
               },
             ),
           ),
           title: const Center(
             child: Text(
               "Go Task",
-              style: TextStyle(),
+              style: TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
           bottom: const TabBar(
             tabs: [
               Tab(text: 'All'),
-              Tab(text: 'Completed'),
-              Tab(text: 'In Progress'),
+              Tab(text: 'Work'),
+              Tab(text: 'Personal'),
+              Tab(text: 'Family'),
             ],
           ),
         ),
-        body: Container(
-          padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 25),
-          child: TabBarView(
-            children: [
-              _buildTodoList(todoItems),
-              _buildTodoList(
-                  todoItems.where((item) => item['isCompleted']).toList()),
-              _buildTodoList(
-                  todoItems.where((item) => !item['isCompleted']).toList()),
-            ],
-          ),
+        body: TabBarView(
+          children: [
+            _buildTodoList('All'),
+            _buildTodoList('Work'),
+            _buildTodoList('Personal'),
+            _buildTodoList('Family'),
+          ],
         ),
         floatingActionButton: FloatingActionButton(
-            child: const Icon(Icons.add),
-            onPressed: () {
-              Navigator.pushNamed(context, '/addTodo');
-            }),
+          child: const Icon(Icons.add),
+          onPressed: _addNewTask,
+        ),
       ),
     );
   }
 
-  Widget _buildTodoList(List<Map<String, dynamic>> items) {
-    return ListView.builder(
-      itemCount: items.length,
-      itemBuilder: (context, index) {
-        final item = items[index];
-        return Todolist(
-          taskName: item['taskName'],
-          isCompleted: item['isCompleted'],
-          startTime: item['startTime'],
-          endTime: item['endTime'],
-          onCheck: (bool? value) {
-            setState(() {
-              item['isCompleted'] = value ?? false;
-            });
-          },
-          onTap: () {
-            // TODO: Implement edit todo item functionality
-          },
-        );
-      },
+  Widget _buildTodoList(String category) {
+    List<Map<String, dynamic>> items;
+    if (category == 'All') {
+      items = List.from(todoDatabase.todoItems);
+    } else {
+      items = todoDatabase.todoItems
+          .where((item) => item['category'] == category)
+          .toList();
+    }
+    
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 25),
+      child: ListView.builder(
+        itemCount: items.length,
+        itemBuilder: (context, index) {
+          final item = items[index];
+          return Todolist(
+            taskName: item['taskName'] ?? 'Untitled Task',
+            description: item['description'] ?? '',
+            isCompleted: item['isCompleted'] ?? false,
+            startTime: item['startTime'] as DateTime?,
+            endTime: item['endTime'] as DateTime?,
+            onCheck: (bool? value) {
+              setState(() {
+                item['isCompleted'] = value ?? false;
+                todoDatabase.updateData();
+              });
+            },
+            onDelete: () {
+              setState(() {
+                todoDatabase.todoItems.remove(item);
+                todoDatabase.updateData();
+              });
+            },
+            onTap: () {
+              // TODO: Implement edit todo item functionality
+            },
+          );
+        },
+      ),
     );
   }
 }

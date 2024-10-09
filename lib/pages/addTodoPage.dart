@@ -1,29 +1,74 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:todo/components/myButton.dart';
 import 'package:todo/components/myDatePicker.dart';
 import 'package:todo/components/myDropDown.dart';
 import 'package:todo/components/myTextField.dart';
+import 'package:todo/data/database.dart';
 
-class Addtodopage extends StatelessWidget {
-  Addtodopage({super.key});
+class Addtodopage extends StatefulWidget {
+  const Addtodopage({Key? key}) : super(key: key);
 
+  @override
+  _AddtodopageState createState() => _AddtodopageState();
+}
+
+class _AddtodopageState extends State<Addtodopage> {
   final TextEditingController taskNameController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
   DateTime? selectedDate;
   String? selectedCategory;
 
+  final _mybox = Hive.box('todoBox');
+  late TodoDatabase todoDatabase;
+
+  @override
+  void initState() {
+    super.initState();
+    todoDatabase = TodoDatabase();
+    todoDatabase.loadData();
+  }
+
+  void createTask() {
+    if (taskNameController.text.isEmpty ||
+        selectedCategory == null ||
+        selectedDate == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill all required fields')),
+      );
+      return;
+    }
+
+    final newTask = {
+      'taskName': taskNameController.text,
+      'description': descriptionController.text,
+      'category': selectedCategory,
+      'startTime': selectedDate,
+      'endTime': selectedDate?.add(const Duration(hours: 1)),
+      'isCompleted': false,
+    };
+
+    setState(() {
+      todoDatabase.todoItems.add(newTask);
+      todoDatabase.updateData();
+    });
+
+    Navigator.of(context).pop(true); // Return true to indicate a task was added
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        Navigator.of(context).pop();
+        Navigator.of(context)
+            .pop(false); // Return false to indicate no task was added
         return false;
       },
       child: Scaffold(
         appBar: AppBar(
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () => Navigator.of(context).pop(false),
           ),
           title: const Text("Create New Task"),
           centerTitle: true,
@@ -51,10 +96,12 @@ class Addtodopage extends StatelessWidget {
               const SizedBox(height: 20),
               _buildSectionTitle("Category"),
               CustomDropdown(
-                items: const ['Personal', 'Work', 'Meeting', 'Study'],
+                items: const ['Personal', 'Work', 'Family'],
                 hint: "Select a category",
                 onChanged: (String? newValue) {
-                  print(newValue);
+                  setState(() {
+                    selectedCategory = newValue;
+                  });
                 },
               ),
               const SizedBox(height: 20),
@@ -62,19 +109,18 @@ class Addtodopage extends StatelessWidget {
               CustomDatePicker(
                 selectedDate: selectedDate,
                 onDateChanged: (DateTime newDate) {
-                  print(newDate);
+                  setState(() {
+                    selectedDate = newDate;
+                  });
                 },
                 hint: "Select due date",
               ),
               const SizedBox(height: 50),
               Center(
                 child: Mybutton(
-                    text: "Create Task",
-                    onPressed: () {
-                      // Add your task creation logic here
-                      Navigator.of(context)
-                          .pop(); // Return to the previous screen after creating the task
-                    }),
+                  text: "Create Task",
+                  onPressed: createTask,
+                ),
               ),
             ],
           ),

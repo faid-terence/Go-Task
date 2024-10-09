@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/adapters.dart';
+
 import 'package:provider/provider.dart';
 import 'package:todo/Provider/themeProvider.dart';
 import 'package:todo/pages/addTodoPage.dart';
@@ -6,7 +8,11 @@ import 'package:todo/pages/homePage.dart';
 import 'package:todo/pages/settingPage.dart';
 import 'package:todo/pages/todoPage.dart';
 
-void main() {
+void main() async {
+  await Hive.initFlutter();
+
+  // open the box
+  await Hive.openBox('todoBox');
   runApp(
     ChangeNotifierProvider(
       create: (context) => Themeprovider(),

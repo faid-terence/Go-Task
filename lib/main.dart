@@ -37,7 +37,7 @@ class MyApp extends StatelessWidget {
       theme: Provider.of<Themeprovider>(context).themeData,
       home: const MainScreen(),
       routes: {
-        "/addTodo": (context) => const Addtodopage(),
+        "/addTodo": (context) => AddTodoPage(),
       },
       localizationsDelegates: context.localizationDelegates,
       supportedLocales: context.supportedLocales,
@@ -69,7 +69,7 @@ class _MainScreenState extends State<MainScreen> {
         index: _selectedIndex,
         children: [
           Homepage(onGetStarted: () => _onItemTapped(1)),
-          const Todopage(),
+          const TodoPage(),
           const Settingpage(),
         ],
       ),

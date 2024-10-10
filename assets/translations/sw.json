@@ -22,5 +22,7 @@
   "Select_category": "Chagua Jamii",
   "due_date": "Tarehe ya Mwisho",
   "Select_due_date": "Chagua Tarehe ya Mwisho",
-  "create_task": "Unda Kazi"
+  "create_task": "Unda Kazi",
+  "appearance": "Muonekano",
+  "version": "Toleo"
 }

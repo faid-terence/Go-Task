@@ -11,75 +11,158 @@ class Settingpage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Center(
-          child: Text('settings'.tr()),
-        ),
+        title: Text('settings'.tr()),
+        centerTitle: true,
         leading: const Icon(
           Icons.settings,
           color: Colors.blue,
         ),
       ),
-      body: Column(
+      body: ListView(
+        padding: const EdgeInsets.symmetric(vertical: 16),
         children: [
+          _buildSectionTitle(context, 'appearance'.tr()),
           _buildSettingItem(
             context,
             "dark_mode".tr(),
-            CupertinoSwitch(
-              value: Provider.of<Themeprovider>(context).isDarkMode,
-              onChanged: (value) {
-                Provider.of<Themeprovider>(context, listen: false)
-                    .toggleTheme();
-              },
-            ),
+            _buildThemeToggle(context),
+            icon: Icons.dark_mode,
           ),
-          _buildSettingItem(
-            context,
-            "language".tr(),
-            DropdownButton<String>(
-              value: context.locale.languageCode,
-              items: [
-                DropdownMenuItem(value: 'en', child: Text('english'.tr())),
-                DropdownMenuItem(value: 'fr', child: Text('french'.tr())),
-                DropdownMenuItem(value: 'sw', child: Text('swahili'.tr())),
-              ],
-              onChanged: (String? newValue) {
-                if (newValue != null) {
-                  context.setLocale(Locale(newValue));
-                }
-              },
-            ),
-          ),
+          _buildSectionTitle(context, 'language'.tr()),
+          _buildLanguageSelector(context),
+          const SizedBox(height: 20),
+          _buildVersionInfo(context),
         ],
       ),
     );
   }
 
-  Widget _buildSettingItem(
-      BuildContext context, String title, Widget trailing) {
+  Widget _buildSectionTitle(BuildContext context, String title) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 16),
+      child: Text(
+        title,
+        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).colorScheme.secondary,
+            ),
+      ),
+    );
+  }
+
+  Widget _buildSettingItem(BuildContext context, String title, Widget trailing,
+      {IconData? icon}) {
     return Container(
       decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            spreadRadius: 2,
-            offset: const Offset(0, 3),
+            color: Colors.black.withOpacity(0.05),
+            spreadRadius: 1,
+            blurRadius: 3,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
-      margin: const EdgeInsets.only(left: 25, top: 10, right: 25),
-      padding: const EdgeInsets.all(25),
+      margin: const EdgeInsets.symmetric(horizontal: 25, vertical: 8),
+      padding: const EdgeInsets.all(16),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            title,
-            style: TextStyle(
-              color: Theme.of(context).colorScheme.primary,
+          if (icon != null) ...[
+            Icon(icon, color: Theme.of(context).colorScheme.primary),
+            const SizedBox(width: 16),
+          ],
+          Expanded(
+            child: Text(
+              title,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurface,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
           trailing,
         ],
+      ),
+    );
+  }
+
+  Widget _buildThemeToggle(BuildContext context) {
+    return Consumer<Themeprovider>(
+      builder: (context, themeProvider, child) {
+        return CupertinoSwitch(
+          value: themeProvider.isDarkMode,
+          onChanged: (_) => themeProvider.toggleTheme(),
+          activeColor: Theme.of(context).colorScheme.primary,
+        );
+      },
+    );
+  }
+
+  Widget _buildLanguageSelector(BuildContext context) {
+    return Column(
+      children: [
+        _buildLanguageOption(context, 'English', const Locale('en')),
+        _buildLanguageOption(context, 'Français', const Locale('fr')),
+        _buildLanguageOption(context, 'Kiswahili', const Locale('sw')),
+      ],
+    );
+  }
+
+  Widget _buildLanguageOption(
+      BuildContext context, String languageName, Locale locale) {
+    final isSelected = context.locale == locale;
+    return InkWell(
+      onTap: () => context.setLocale(locale),
+      child: Container(
+        decoration: BoxDecoration(
+          color: isSelected
+              ? Theme.of(context).colorScheme.primaryContainer
+              : Theme.of(context).colorScheme.surface,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              spreadRadius: 1,
+              blurRadius: 3,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        margin: const EdgeInsets.symmetric(horizontal: 25, vertical: 8),
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              languageName,
+              style: TextStyle(
+                color: isSelected
+                    ? Theme.of(context).colorScheme.onPrimaryContainer
+                    : Theme.of(context).colorScheme.onSurface,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+              ),
+            ),
+            if (isSelected)
+              Icon(
+                Icons.check,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildVersionInfo(BuildContext context) {
+    return Center(
+      child: Text(
+        'version'.tr(args: ['1.0.0']),
+        style: TextStyle(
+          color: Theme.of(context).colorScheme.onBackground.withOpacity(0.6),
+          fontSize: 12,
+        ),
       ),
     );
   }

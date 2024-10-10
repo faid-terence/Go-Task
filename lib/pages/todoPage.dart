@@ -58,16 +58,16 @@ class _TodopageState extends State<Todopage> {
           ),
           title: Center(
             child: Text(
-              "go_task".tr(),
+              context.tr("go_task"),
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
           bottom: TabBar(
             tabs: [
-              Tab(text: 'all'.tr()),
-              Tab(text: 'work'.tr()),
-              Tab(text: 'personal'.tr()),
-              Tab(text: 'family'.tr()),
+              Tab(text: context.tr('all')),
+              Tab(text: context.tr('work')),
+              Tab(text: context.tr('personal')),
+              Tab(text: context.tr('family')),
             ],
           ),
         ),
@@ -104,7 +104,7 @@ class _TodopageState extends State<Todopage> {
         itemBuilder: (context, index) {
           final item = items[index];
           return Todolist(
-            taskName: item['taskName'] ?? 'untitled_task'.tr(),
+            taskName: item['taskName'] ?? context.tr('untitled_task'),
             description: item['description'] ?? '',
             isCompleted: item['isCompleted'] ?? false,
             startTime: item['startTime'] as DateTime?,

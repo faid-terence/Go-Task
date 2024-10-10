@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:todo/components/editTodoModel.dart';
 import 'package:todo/components/todoList.dart';
 import 'package:todo/data/database.dart';
 import 'package:todo/pages/addTodoPage.dart';
@@ -36,6 +37,31 @@ class _TodopageState extends State<Todopage> {
         todoDatabase.loadData();
       });
     }
+  }
+
+  void _editTask(Map<String, dynamic> task) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
+        child: EditTodoModal(
+          task: task,
+          onSave: (updatedTask) {
+            setState(() {
+              int index =
+                  todoDatabase.todoItems.indexWhere((item) => item == task);
+              if (index != -1) {
+                todoDatabase.todoItems[index] = updatedTask;
+                todoDatabase.updateData();
+              }
+            });
+          },
+        ),
+      ),
+    );
   }
 
   @override
@@ -121,8 +147,11 @@ class _TodopageState extends State<Todopage> {
                 todoDatabase.updateData();
               });
             },
+            onEdit: () {
+              _editTask(item);
+            },
             onTap: () {
-              // TODO: Implement edit todo item functionality
+              _editTask(item);
             },
           );
         },

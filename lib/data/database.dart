@@ -22,7 +22,13 @@ class TodoDatabase {
         'endTime': DateTime(2023, 1, 1, 14, 30),
         'category': 'Work',
       },
-      // ... other items ...
+      {
+        'taskName': 'Family Dinner',
+        'isCompleted': false,
+        'startTime': DateTime(2023, 1, 1, 18, 0),
+        'endTime': DateTime(2023, 1, 1, 20, 0),
+        'category': 'Family',
+      },
     ];
   }
 

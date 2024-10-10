@@ -70,7 +70,7 @@ class _MainScreenState extends State<MainScreen> {
         children: [
           Homepage(onGetStarted: () => _onItemTapped(1)),
           const Todopage(),
-          Settingpage(),
+          const Settingpage(),
         ],
       ),
       bottomNavigationBar: _selectedIndex != 0

@@ -12,7 +12,7 @@ class Todolist extends StatelessWidget {
   final VoidCallback onDelete;
 
   const Todolist({
-    Key? key,
+    super.key,
     required this.taskName,
     required this.description,
     required this.isCompleted,
@@ -21,7 +21,7 @@ class Todolist extends StatelessWidget {
     required this.onCheck,
     required this.onDelete,
     this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

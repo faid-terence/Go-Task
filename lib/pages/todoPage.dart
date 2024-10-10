@@ -3,9 +3,10 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:todo/components/todoList.dart';
 import 'package:todo/data/database.dart';
 import 'package:todo/pages/addTodoPage.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class Todopage extends StatefulWidget {
-  const Todopage({Key? key}) : super(key: key);
+  const Todopage({super.key});
 
   @override
   _TodopageState createState() => _TodopageState();
@@ -28,7 +29,7 @@ class _TodopageState extends State<Todopage> {
   void _addNewTask() async {
     final bool? taskAdded = await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => Addtodopage()),
+      MaterialPageRoute(builder: (context) => const Addtodopage()),
     );
     if (taskAdded == true) {
       setState(() {
@@ -55,18 +56,18 @@ class _TodopageState extends State<Todopage> {
               },
             ),
           ),
-          title: const Center(
+          title: Center(
             child: Text(
-              "Go Task",
-              style: TextStyle(fontWeight: FontWeight.bold),
+              "go_task".tr(),
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
-          bottom: const TabBar(
+          bottom: TabBar(
             tabs: [
-              Tab(text: 'All'),
-              Tab(text: 'Work'),
-              Tab(text: 'Personal'),
-              Tab(text: 'Family'),
+              Tab(text: 'all'.tr()),
+              Tab(text: 'work'.tr()),
+              Tab(text: 'personal'.tr()),
+              Tab(text: 'family'.tr()),
             ],
           ),
         ),
@@ -79,8 +80,8 @@ class _TodopageState extends State<Todopage> {
           ],
         ),
         floatingActionButton: FloatingActionButton(
-          child: const Icon(Icons.add),
           onPressed: _addNewTask,
+          child: const Icon(Icons.add),
         ),
       ),
     );
@@ -95,7 +96,7 @@ class _TodopageState extends State<Todopage> {
           .where((item) => item['category'] == category)
           .toList();
     }
-    
+
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 25),
       child: ListView.builder(
@@ -103,7 +104,7 @@ class _TodopageState extends State<Todopage> {
         itemBuilder: (context, index) {
           final item = items[index];
           return Todolist(
-            taskName: item['taskName'] ?? 'Untitled Task',
+            taskName: item['taskName'] ?? 'untitled_task'.tr(),
             description: item['description'] ?? '',
             isCompleted: item['isCompleted'] ?? false,
             startTime: item['startTime'] as DateTime?,

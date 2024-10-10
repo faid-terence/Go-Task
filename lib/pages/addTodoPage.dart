@@ -5,9 +5,10 @@ import 'package:todo/components/myDatePicker.dart';
 import 'package:todo/components/myDropDown.dart';
 import 'package:todo/components/myTextField.dart';
 import 'package:todo/data/database.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class Addtodopage extends StatefulWidget {
-  const Addtodopage({Key? key}) : super(key: key);
+  const Addtodopage({super.key});
 
   @override
   _AddtodopageState createState() => _AddtodopageState();
@@ -78,26 +79,31 @@ class _AddtodopageState extends State<Addtodopage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 20),
-              _buildSectionTitle("Task Name"),
+              _buildSectionTitle("task_name".tr()),
               Mytextfield(
                 controller: taskNameController,
-                hintText: "Task Name",
+                hintText: "task_name".tr(),
                 icon: null,
                 obscureText: false,
               ),
               const SizedBox(height: 20),
-              _buildSectionTitle("Task Description"),
+              _buildSectionTitle("task_description".tr()),
               Mytextfield(
                 controller: descriptionController,
-                hintText: "Enter description",
+                hintText: "task_description".tr(),
                 obscureText: false,
                 height: 100,
               ),
               const SizedBox(height: 20),
-              _buildSectionTitle("Category"),
+              _buildSectionTitle("category".tr()),
               CustomDropdown(
-                items: const ['Personal', 'Work', 'Family'],
-                hint: "Select a category",
+                // translate the dropdown
+                items: [
+                  "work".tr(),
+                  "personal".tr(),
+                  "family".tr(),
+                ],
+                hint: "Select_category".tr(),
                 onChanged: (String? newValue) {
                   setState(() {
                     selectedCategory = newValue;
@@ -105,7 +111,7 @@ class _AddtodopageState extends State<Addtodopage> {
                 },
               ),
               const SizedBox(height: 20),
-              _buildSectionTitle("Due Date"),
+              _buildSectionTitle("due_date".tr()),
               CustomDatePicker(
                 selectedDate: selectedDate,
                 onDateChanged: (DateTime newDate) {
@@ -113,12 +119,12 @@ class _AddtodopageState extends State<Addtodopage> {
                     selectedDate = newDate;
                   });
                 },
-                hint: "Select due date",
+                hint: "Select_due_date".tr(),
               ),
               const SizedBox(height: 50),
               Center(
                 child: Mybutton(
-                  text: "Create Task",
+                  text: "create_task".tr(),
                   onPressed: createTask,
                 ),
               ),

@@ -22,5 +22,7 @@
   "Select_category": "Select Category",
   "due_date": "Due Date",
   "Select_due_date": "Select Due Date",
-  "create_task": "Create Task"
+  "create_task": "Create Task",
+  "appearance": "Appearance",
+  "version": "Version"
 }

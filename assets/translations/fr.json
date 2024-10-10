@@ -22,5 +22,7 @@
   "Select_category": "Sélectionner une catégorie",
   "due_date": "Date d'échéance",
   "Select_due_date": "Sélectionner une date d'échéance",
-  "create_task": "Créer une tâche"
+  "create_task": "Créer une tâche",
+  "appearance": "Apparence",
+  "version": "Version"
 }

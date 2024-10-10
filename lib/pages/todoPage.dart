@@ -6,20 +6,22 @@ import 'package:todo/data/database.dart';
 import 'package:todo/pages/addTodoPage.dart';
 import 'package:easy_localization/easy_localization.dart';
 
-class Todopage extends StatefulWidget {
-  const Todopage({super.key});
+class TodoPage extends StatefulWidget {
+  const TodoPage({Key? key}) : super(key: key);
 
   @override
-  _TodopageState createState() => _TodopageState();
+  _TodoPageState createState() => _TodoPageState();
 }
 
-class _TodopageState extends State<Todopage> {
+class _TodoPageState extends State<TodoPage> {
   final _mybox = Hive.box('todoBox');
-  TodoDatabase todoDatabase = TodoDatabase();
+  late TodoDatabase todoDatabase;
+  String currentSortOption = 'dateAdded';
 
   @override
   void initState() {
     super.initState();
+    todoDatabase = TodoDatabase();
     if (_mybox.get("todoItems") == null) {
       todoDatabase.createInitialData();
     } else {
@@ -30,7 +32,7 @@ class _TodopageState extends State<Todopage> {
   void _addNewTask() async {
     final bool? taskAdded = await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const Addtodopage()),
+      MaterialPageRoute(builder: (context) => const AddTodoPage()),
     );
     if (taskAdded == true) {
       setState(() {
@@ -39,7 +41,7 @@ class _TodopageState extends State<Todopage> {
     }
   }
 
-  void _editTask(Map<String, dynamic> task) {
+  void _editTask(Map<String, dynamic> task, int index) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -51,12 +53,7 @@ class _TodopageState extends State<Todopage> {
           task: task,
           onSave: (updatedTask) {
             setState(() {
-              int index =
-                  todoDatabase.todoItems.indexWhere((item) => item == task);
-              if (index != -1) {
-                todoDatabase.todoItems[index] = updatedTask;
-                todoDatabase.updateData();
-              }
+              todoDatabase.updateTask(index, updatedTask);
             });
           },
         ),
@@ -84,16 +81,39 @@ class _TodopageState extends State<Todopage> {
           ),
           title: Center(
             child: Text(
-              context.tr("go_task"),
+              "go_task".tr(),
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
+          actions: [
+            PopupMenuButton<String>(
+              onSelected: (String result) {
+                setState(() {
+                  currentSortOption = result;
+                });
+              },
+              itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                PopupMenuItem<String>(
+                  value: 'priority',
+                  child: Text('sort_by_priority'.tr()),
+                ),
+                PopupMenuItem<String>(
+                  value: 'dateAdded',
+                  child: Text('sort_by_date_added'.tr()),
+                ),
+                PopupMenuItem<String>(
+                  value: 'deadline',
+                  child: Text('sort_by_deadline'.tr()),
+                ),
+              ],
+            ),
+          ],
           bottom: TabBar(
             tabs: [
-              Tab(text: context.tr('all')),
-              Tab(text: context.tr('work')),
-              Tab(text: context.tr('personal')),
-              Tab(text: context.tr('family')),
+              Tab(text: 'all'.tr()),
+              Tab(text: 'work'.tr()),
+              Tab(text: 'personal'.tr()),
+              Tab(text: 'family'.tr()),
             ],
           ),
         ),
@@ -114,13 +134,10 @@ class _TodopageState extends State<Todopage> {
   }
 
   Widget _buildTodoList(String category) {
-    List<Map<String, dynamic>> items;
-    if (category == 'All') {
-      items = List.from(todoDatabase.todoItems);
-    } else {
-      items = todoDatabase.todoItems
-          .where((item) => item['category'] == category)
-          .toList();
+    List<Map<String, dynamic>> items =
+        todoDatabase.getSortedTasks(currentSortOption);
+    if (category != 'All') {
+      items = items.where((item) => item['category'] == category).toList();
     }
 
     return Container(
@@ -130,11 +147,12 @@ class _TodopageState extends State<Todopage> {
         itemBuilder: (context, index) {
           final item = items[index];
           return Todolist(
-            taskName: item['taskName'] ?? context.tr('untitled_task'),
+            taskName: item['taskName'] ?? 'untitled_task'.tr(),
             description: item['description'] ?? '',
             isCompleted: item['isCompleted'] ?? false,
             startTime: item['startTime'] as DateTime?,
             endTime: item['endTime'] as DateTime?,
+            priority: item['priority'] ?? 'medium',
             onCheck: (bool? value) {
               setState(() {
                 item['isCompleted'] = value ?? false;
@@ -143,15 +161,14 @@ class _TodopageState extends State<Todopage> {
             },
             onDelete: () {
               setState(() {
-                todoDatabase.todoItems.remove(item);
-                todoDatabase.updateData();
+                todoDatabase.deleteTask(todoDatabase.todoItems.indexOf(item));
               });
             },
             onEdit: () {
-              _editTask(item);
+              _editTask(item, todoDatabase.todoItems.indexOf(item));
             },
             onTap: () {
-              _editTask(item);
+              // This is now handled internally in the Todolist widget
             },
           );
         },

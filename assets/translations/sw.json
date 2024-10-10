@@ -24,5 +24,18 @@
   "Select_due_date": "Chagua Tarehe ya Mwisho",
   "create_task": "Unda Kazi",
   "appearance": "Muonekano",
-  "version": "Toleo"
+  "version": "Toleo",
+  "edit_task": "Edit Task",
+  "save_changes": "Save Changes",
+  "please_fill_all_required_fields": "Please fill all required fields",
+  "priority": "Kipaumbele",
+  "select_priority": "Chagua Kipaumbele",
+  "low": "Chini",
+  "medium": "Wastani",
+  "high": "Juu",
+  "sort_by_priority": "Panga kwa Kipaumbele",
+  "sort_by_date_added": "Panga kwa Tarehe ya Kuongezwa",
+  "sort_by_deadline": "Panga kwa Tarehe ya Mwisho",
+  "create_new_task": "Unda Kazi Mpya",
+  "select_due_date": "Chagua Tarehe ya Mwisho"
 }

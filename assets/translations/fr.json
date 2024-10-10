@@ -24,5 +24,18 @@
   "Select_due_date": "Sélectionner une date d'échéance",
   "create_task": "Créer une tâche",
   "appearance": "Apparence",
-  "version": "Version"
+  "version": "Version",
+  "priority": "Priorité",
+  "select_priority": "Sélectionner la priorité",
+  "low": "Basse",
+  "medium": "Moyenne",
+  "high": "Haute",
+  "sort_by_priority": "Trier par priorité",
+  "sort_by_date_added": "Trier par date d'ajout",
+  "sort_by_deadline": "Trier par date d'échéance",
+  "create_new_task": "Créer une nouvelle tâche",
+  "edit_task": "Modifier la tâche",
+  "save_changes": "Enregistrer les modifications",
+  "please_fill_all_required_fields": "Veuillez remplir tous les champs obligatoires",
+  "select_due_date": "Sélectionner une date d'échéance"
 }

@@ -7,18 +7,19 @@ import 'package:todo/components/myTextField.dart';
 import 'package:todo/data/database.dart';
 import 'package:easy_localization/easy_localization.dart';
 
-class Addtodopage extends StatefulWidget {
-  const Addtodopage({super.key});
+class AddTodoPage extends StatefulWidget {
+  const AddTodoPage({Key? key}) : super(key: key);
 
   @override
-  _AddtodopageState createState() => _AddtodopageState();
+  _AddTodoPageState createState() => _AddTodoPageState();
 }
 
-class _AddtodopageState extends State<Addtodopage> {
+class _AddTodoPageState extends State<AddTodoPage> {
   final TextEditingController taskNameController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
   DateTime? selectedDate;
   String? selectedCategory;
+  String? selectedPriority;
 
   final _mybox = Hive.box('todoBox');
   late TodoDatabase todoDatabase;
@@ -33,9 +34,10 @@ class _AddtodopageState extends State<Addtodopage> {
   void createTask() {
     if (taskNameController.text.isEmpty ||
         selectedCategory == null ||
-        selectedDate == null) {
+        selectedDate == null ||
+        selectedPriority == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill all required fields')),
+        SnackBar(content: Text('please_fill_all_required_fields'.tr())),
       );
       return;
     }
@@ -47,22 +49,19 @@ class _AddtodopageState extends State<Addtodopage> {
       'startTime': selectedDate,
       'endTime': selectedDate?.add(const Duration(hours: 1)),
       'isCompleted': false,
+      'priority': selectedPriority,
+      'dateAdded': DateTime.now(),
     };
 
-    setState(() {
-      todoDatabase.todoItems.add(newTask);
-      todoDatabase.updateData();
-    });
-
-    Navigator.of(context).pop(true); // Return true to indicate a task was added
+    todoDatabase.addTask(newTask);
+    Navigator.of(context).pop(true);
   }
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        Navigator.of(context)
-            .pop(false); // Return false to indicate no task was added
+        Navigator.of(context).pop(false);
         return false;
       },
       child: Scaffold(
@@ -71,7 +70,7 @@ class _AddtodopageState extends State<Addtodopage> {
             icon: const Icon(Icons.arrow_back),
             onPressed: () => Navigator.of(context).pop(false),
           ),
-          title: const Text("Create New Task"),
+          title: Text("create_new_task".tr()),
           centerTitle: true,
         ),
         body: SingleChildScrollView(
@@ -97,16 +96,22 @@ class _AddtodopageState extends State<Addtodopage> {
               const SizedBox(height: 20),
               _buildSectionTitle("category".tr()),
               CustomDropdown(
-                // translate the dropdown
-                items: [
-                  "work".tr(),
-                  "personal".tr(),
-                  "family".tr(),
-                ],
-                hint: "Select_category".tr(),
+                items: ["work".tr(), "personal".tr(), "family".tr()],
+                hint: "select_category".tr(),
                 onChanged: (String? newValue) {
                   setState(() {
                     selectedCategory = newValue;
+                  });
+                },
+              ),
+              const SizedBox(height: 20),
+              _buildSectionTitle("priority".tr()),
+              CustomDropdown(
+                items: ["low".tr(), "medium".tr(), "high".tr()],
+                hint: "select_priority".tr(),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    selectedPriority = newValue;
                   });
                 },
               ),
@@ -119,7 +124,7 @@ class _AddtodopageState extends State<Addtodopage> {
                     selectedDate = newDate;
                   });
                 },
-                hint: "Select_due_date".tr(),
+                hint: "select_due_date".tr(),
               ),
               const SizedBox(height: 50),
               Center(

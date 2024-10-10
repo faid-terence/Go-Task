@@ -10,6 +10,7 @@ class Todolist extends StatelessWidget {
   final Function(bool?)? onCheck;
   final VoidCallback? onTap;
   final VoidCallback onDelete;
+  final VoidCallback onEdit;
 
   const Todolist({
     super.key,
@@ -20,6 +21,7 @@ class Todolist extends StatelessWidget {
     this.endTime,
     required this.onCheck,
     required this.onDelete,
+    required this.onEdit,
     this.onTap,
   });
 
@@ -102,7 +104,13 @@ class Todolist extends StatelessWidget {
                   ],
                 ),
               ),
-              Icon(Icons.chevron_right, color: Colors.grey[400]),
+              GestureDetector(
+                onTap: onEdit,
+                child: Icon(
+                  Icons.edit_note_rounded,
+                  color: Colors.grey[400],
+                ),
+              ),
             ],
           ),
         ),
